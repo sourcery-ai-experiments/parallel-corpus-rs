@@ -13,11 +13,17 @@ mod tests;
 // pub interface Token extends Text {
 //   readonly id: string
 // }
+#[derive(Debug, PartialEq)]
+pub struct Token {
+    text: String,
+    id: String,
+}
 
-// pub fn Token(text: string, id: string): Token {
-//   return {id, text}
-// }
-
+impl Token {
+    pub fn new(text: String, id: String) -> Token {
+        Self { id, text }
+    }
+}
 // pub fn token(t: Token): Token {
 //   return Token(t.text, t.id)
 // }
@@ -223,9 +229,12 @@ pub fn tokenize(s: &str) -> Vec<String> {
 //   identify(['apa', 'bepa'], '#') // => [{text: 'apa', id: '#0'}, {text: 'bepa', id: '#1'}]
 
 // */
-// pub fn identify(toks: string[], prefix: string): Token[] {
-//   return toks.map((text, i) => Token(text, prefix + i))
-// }
+pub fn identify(toks: Vec<String>, prefix: &str) -> Vec<Token> {
+    toks.into_iter()
+        .enumerate()
+        .map(|(i, text)| Token::new(text, format!("{prefix}{i}")))
+        .collect()
+}
 
 // /** The offset in the text at an index. */
 // pub fn text_offset(texts: string[], index: number): number {
