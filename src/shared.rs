@@ -2,24 +2,24 @@
 // import * as R from 'ramda'
 // import {Lens, Store} from 'reactive-lens'
 // import * as Dmp from 'diff-match-patch'
-// export const dmp = new Dmp.diff_match_patch() as Dmp.diff_match_patch
+// pub const dmp = new Dmp.diff_match_patch() as Dmp.diff_match_patch
 
-// export type TokenDiff = [number, string][]
+// pub type TokenDiff = [number, string][]
 
 // interface Stringable {
 //   toString: () => string
 // }
 
-// export function capitalize_head(s: string) {
+// pub fn capitalize_head(s: string) {
 //   return s.slice(0, 1).toUpperCase() + s.slice(1)
 // }
 
-// export function debug(): boolean {
+// pub fn debug(): boolean {
 //   const env = process.env.NODE_ENV
 //   return env === 'production'
 // }
 
-// export function debugName($debugName: string) {
+// pub fn debugName($debugName: string) {
 //   const env = process.env.NODE_ENV
 //   if (env === 'production') {
 //     return {}
@@ -43,14 +43,14 @@
 //   next().charCodeAt(0) = 3
 
 // */
-// export function char_stream(): () => string {
+// pub fn char_stream(): () => string {
 //   let i = 0
 //   return () => {
 //     return String.fromCharCode(parseInt((i++).toString(), 16))
 //   }
 // }
 
-// export type ChangeInt = -1 | 0 | 1
+// pub type ChangeInt = -1 | 0 | 1
 
 // /**
 
@@ -62,7 +62,7 @@
 //   raw_diff(range(n), range(2*n)) // => range(2*n).map(i => R.pair(i < n ? 0 : 1, i))
 
 // */
-// export function raw_diff<A extends Stringable>(
+// pub fn raw_diff<A extends Stringable>(
 //   xs: A[],
 //   ys: A[],
 //   cmp: (a: A) => string = a => a.toString()
@@ -93,7 +93,7 @@
 //   b: B
 // }
 
-// export type Change<A, B> = Deleted<A> | Constant<A, B> | Inserted<B>
+// pub type Change<A, B> = Deleted<A> | Constant<A, B> | Inserted<B>
 
 // /** Heterogeneous diff
 
@@ -111,7 +111,7 @@
 //   hdiff(abcca, BACC, lower, lower) // => expect
 
 // */
-// export function hdiff<A extends Stringable, B extends Stringable>(
+// pub fn hdiff<A extends Stringable, B extends Stringable>(
 //   xs: A[],
 //   ys: B[],
 //   a_cmp: (a: A) => string = a => a.toString(),
@@ -121,7 +121,7 @@
 //   const a_from = new Map<string, A[]>()
 //   const b_from = new Map<string, B[]>()
 //   const next = char_stream()
-//   function assign<C>(c: C, c_cmp: (c: C) => string, c_from: Map<string, C[]>): string {
+//   fn assign<C>(c: C, c_cmp: (c: C) => string, c_from: Map<string, C[]>): string {
 //     const s = c_cmp(c)
 //     let u = to.get(s)
 //     if (u === undefined) {
@@ -157,21 +157,30 @@
 //   })
 // }
 
-// /** Adds a final space if there is none */
-// export function end_with_space(s: string): string {
-//   return s.match(/\s$/) ? s : s + ' '
-// }
+/// Adds a final space if there is none
+pub fn end_with_space(s: String) -> String {
+    //   return s.match(/\s$/) ? s : s + ' '
+    if let Some(c) = s.chars().rev().next() {
+        if c.is_whitespace() {
+            s
+        } else {
+            format!("{s} ")
+        }
+    } else {
+        format!("{s} ")
+    }
+}
 
-// export function token_diff(s1: string, s2: string) {
+// pub fn token_diff(s1: string, s2: string) {
 //   const d = dmp.diff_main(s1, s2)
 //   dmp.diff_cleanupSemantic(d)
 //   return d
 // }
 
-// export const invert_token_diff = (ds: TokenDiff) => ds.map(([i, s]) => [-i, s] as [number, string])
+// pub const invert_token_diff = (ds: TokenDiff) => ds.map(([i, s]) => [-i, s] as [number, string])
 
 // // all strings must be nonempty
-// export function multi_token_diff(ss: string[], s2: string): TokenDiff[] {
+// pub fn multi_token_diff(ss: string[], s2: string): TokenDiff[] {
 //   if (ss.length === 0) {
 //     return []
 //   }
@@ -200,7 +209,7 @@
 // }
 
 // /** Compare two arrays for shallow equality */
-// export function shallow_array_eq<A>(xs: A[], ys: A[]): boolean {
+// pub fn shallow_array_eq<A>(xs: A[], ys: A[]): boolean {
 //   return xs.length == ys.length && xs.every((x, i) => x == ys[i])
 // }
 
@@ -212,7 +221,7 @@
 //   array_multiset_eq(['apa', 'bepa', 'apa'], ['bepa']) // => false
 
 // */
-// export function array_multiset_eq<A>(xs: A[], ys: A[]): boolean {
+// pub fn array_multiset_eq<A>(xs: A[], ys: A[]): boolean {
 //   const xm = new Map<A, number>()
 //   const ym = new Map<A, number>()
 //   let tmp
@@ -222,7 +231,7 @@
 // }
 
 // /** Are these two maps equal? */
-// export function map_equal<A, B>(a: Map<A, B>, b: Map<A, B>): boolean {
+// pub fn map_equal<A, B>(a: Map<A, B>, b: Map<A, B>): boolean {
 //   let ok = true
 //   a.forEach((k, v) => (ok = ok && b.get(v) == k))
 //   b.forEach((k, v) => (ok = ok && a.get(v) == k))
@@ -230,7 +239,7 @@
 // }
 
 // /** Are these two sets equal? */
-// export function set_equal<A>(a: Set<A>, b: Set<A>): boolean {
+// pub fn set_equal<A>(a: Set<A>, b: Set<A>): boolean {
 //   let ok = true
 //   a.forEach(k => (ok = ok && b.has(k)))
 //   b.forEach(k => (ok = ok && a.has(k)))
@@ -245,12 +254,12 @@
 //   array_set_eq(['apa', 'bepa', 'apa'], ['bepa']) // => false
 
 // */
-// export function array_set_eq<A>(xs: A[], ys: A[]): boolean {
+// pub fn array_set_eq<A>(xs: A[], ys: A[]): boolean {
 //   return set_equal(new Set(xs), new Set(ys))
 // }
 
 // /** map for strings */
-// export function str_map<A>(s: string, f: (c: string, i: number) => A): A[] {
+// pub fn str_map<A>(s: string, f: (c: string, i: number) => A): A[] {
 //   const out = [] as A[]
 //   for (let i = 0; i < s.length; ++i) {
 //     out.push(f(s[i], i))
@@ -262,28 +271,28 @@
 // const stringify = require('json-stringify-pretty-compact') as (s: any) => string
 
 // /** Show a JSON object with indentation */
-// export function show(x: any): string {
+// pub fn show(x: any): string {
 //   return stringify(x)
 //   // return JSON.stringify(x, undefined, 2)
 // }
 
-// export function stderr<A>(x: A): A {
+// pub fn stderr<A>(x: A): A {
 //   console.error(show(x))
 //   console.error()
 //   return x
 // }
 
-// export function stdout<A>(x: A): A {
+// pub fn stdout<A>(x: A): A {
 //   console.log(show(x))
 //   return x
 // }
 
 // /** Numeric sort */
-// export function numsort(xs: number[]): number[] {
+// pub fn numsort(xs: number[]): number[] {
 //   return xs.slice().sort((u, v) => u - v)
 // }
 
-// export type Comparator<A> = (a: A, b: A) => number
+// pub type Comparator<A> = (a: A, b: A) => number
 
 // /** Chain multiple comparators into one.
 
@@ -295,7 +304,7 @@
 //   const cmp_vowels = (a: string, b: string) => a.match(/[aeiou]/g)!.length - b.match(/[aeiou]/g)!.length
 //   xs.sort(chain_cmps(cmp_length, cmp_vowels)) // => ['two', 'one', 'five', 'four', 'three']
 //  */
-// export function chain_cmps<A>(...cmps: Comparator<A>[]): Comparator<A> {
+// pub fn chain_cmps<A>(...cmps: Comparator<A>[]): Comparator<A> {
 //   return (a, b) => {
 //     let ret = 0
 //     for (const cmp of [...cmps, cmp_order]) {
@@ -312,21 +321,21 @@
 //   cmp_order('c', 'c') // => 0
 //   cmp_order('c', 'a') // => 1
 //  */
-// export function cmp_order<A>(a: A, b: A): -1 | 0 | 1 {
+// pub fn cmp_order<A>(a: A, b: A): -1 | 0 | 1 {
 //   return a > b ? 1 : a < b ? -1 : 0
 // }
 
-// /** Creates a comparator which applies some function on both elements and compares the results.
+// /** Creates a comparator which applies some fn on both elements and compares the results.
 
 //   mkcmp((a: string) => a.length)('abc', 'abcde')       // => -1
 //   mkcmp((a: string) => a.length, true)('abc', 'abcde') // => 1
 //  */
-// export function mkcmp<A>(f: (a: A) => any, negate = false): Comparator<A> {
+// pub fn mkcmp<A>(f: (a: A) => any, negate = false): Comparator<A> {
 //   return (a: A, b: A): number => (negate ? -1 : 1) * cmp_order(f(a), f(b))
 // }
 
 // /** Trims initial whitespace */
-// export function ltrim(s: string): string {
+// pub fn ltrim(s: string): string {
 //   const m = s.match(/^\s*(.*)$/)
 //   if (m) {
 //     return m[1]
@@ -342,7 +351,7 @@
 //   whitespace_split('  XY') // => ['  XY', '']
 
 // */
-// export function whitespace_split(s: string): [string, string] {
+// pub fn whitespace_split(s: string): [string, string] {
 //   const m = s.match(/^(.*?)(\s*)$/)
 //   if (m && m.length == 3) {
 //     return [m[1], m[2]]
@@ -357,7 +366,7 @@
 //   initial_whitespace_split('  XY')   // => ['  ', 'XY']
 
 // */
-// export function initial_whitespace_split(s: string): [string, string] {
+// pub fn initial_whitespace_split(s: string): [string, string] {
 //   const m = s.match(/^(\s*)(.*)$/)
 //   if (m && m.length == 3) {
 //     return [m[1], m[2]]
@@ -373,7 +382,7 @@
 //   increases([])        // => true
 
 // */
-// export function increases(xs: number[]): boolean {
+// pub fn increases(xs: number[]): boolean {
 //   return xs.every((v, i) => i == 0 || v > xs[i - 1])
 // }
 
@@ -385,7 +394,7 @@
 //   contiguous([])        // => true
 
 // */
-// export function contiguous(xs: number[]): boolean {
+// pub fn contiguous(xs: number[]): boolean {
 //   return xs.every((x, i) => i == 0 || xs[i - 1] + 1 == x)
 // }
 
@@ -395,7 +404,7 @@
 //   group_contiguous(['d', 'a', 'b'], t => t.charCodeAt(0)) // => [['a', 'b'], ['d']]
 
 // */
-// export function group_contiguous<A>(xs: A[], cmp: (x: A) => number) {
+// pub fn group_contiguous<A>(xs: A[], cmp: (x: A) => number) {
 //   const groups: A[][] = []
 //   xs.sort((a, b) => cmp(a) - cmp(b)).forEach(x => {
 //     let g = groups[groups.length - 1]
@@ -406,12 +415,12 @@
 // }
 
 // /** Flatten an array of arrays */
-// export function flatten<A>(xss: A[][]): A[] {
+// pub fn flatten<A>(xss: A[][]): A[] {
 //   return ([] as A[]).concat(...xss)
 // }
 
 // /** Flatten an array of arrays */
-// export function flatMap<A, B>(xs: A[], f: (a: A, index: number) => B[]): B[] {
+// pub fn flatMap<A, B>(xs: A[], f: (a: A, index: number) => B[]): B[] {
 //   return flatten(xs.map(f))
 // }
 
@@ -419,7 +428,7 @@
 
 //   across(1, [1, 2, 3], ['a', 'b', 'c']) // [2, 'b']
 //  */
-// export function across(i: number, ...xss: any[][]): any[] {
+// pub fn across(i: number, ...xss: any[][]): any[] {
 //   return xss.map(xs => xs[i])
 // }
 
@@ -431,7 +440,7 @@
 //   splitAt3('0123456'.split(''), 0, 2).map(xs => xs.join('')) // => ['', '01', '23456']
 
 // */
-// export function splitAt3<A>(xs: A[], start: number, end: number): [A[], A[], A[]] {
+// pub fn splitAt3<A>(xs: A[], start: number, end: number): [A[], A[], A[]] {
 //   const [ab, c] = R.splitAt(end, xs)
 //   const [a, b] = R.splitAt(start, ab)
 //   return [a, b, c]
@@ -445,19 +454,19 @@
 //   stringSplitAt3('0123456', 0, 2) // => ['', '01', '23456']
 
 // */
-// export function stringSplitAt3(xs: string, start: number, end: number): [string, string, string] {
+// pub fn stringSplitAt3(xs: string, start: number, end: number): [string, string, string] {
 //   const [ab, c] = R.splitAt(end, xs)
 //   const [a, b] = R.splitAt(start, ab)
 //   return [a, b, c]
 // }
 
-// export function cat<A>(xs: (A | null)[]): A[] {
+// pub fn cat<A>(xs: (A | null)[]): A[] {
 //   const out = [] as A[]
 //   xs.map(x => x != null && out.push(x))
 //   return out
 // }
 
-// export function cycle<A>(n: number, xs: A[]): A[] {
+// pub fn cycle<A>(n: number, xs: A[]): A[] {
 //   const out = [] as A[]
 //   let i = 0
 //   while (out.length < n) {
@@ -471,32 +480,32 @@
 // }
 
 // /** Minimum of a non-empty array */
-// export function minimum(xs: number[]) {
+// pub fn minimum(xs: number[]) {
 //   return xs.reduce((x, y) => Math.min(x, y), xs[0])
 // }
 
 // /** Maximum of a non-empty array */
-// export function maximum(xs: number[]) {
+// pub fn maximum(xs: number[]) {
 //   return xs.reduce((x, y) => Math.max(x, y), xs[0])
 // }
 
 // /** Sum the numbers in an array */
-// export function sum(xs: number[]) {
+// pub fn sum(xs: number[]) {
 //   return xs.reduce((x, y) => x + y, 0)
 // }
 
 // /** Minimum of a non-empty array */
-// export function minimumBy<A>(inj: (a: A) => R.Ordered, [hd, ...tl]: A[]): A {
+// pub fn minimumBy<A>(inj: (a: A) => R.Ordered, [hd, ...tl]: A[]): A {
 //   return R.reduce(R.minBy(inj), hd, tl)
 // }
 
 // /** Maximum of a non-empty array */
-// export function maximumBy<A>(inj: (a: A) => R.Ordered, [hd, ...tl]: A[]): A {
+// pub fn maximumBy<A>(inj: (a: A) => R.Ordered, [hd, ...tl]: A[]): A {
 //   return R.reduce(R.maxBy(inj), hd, tl)
 // }
 
 // /** Returns a copy of the array with duplicates removed, via toString */
-// export function uniq<A extends Stringable>(xs: A[]): A[] {
+// pub fn uniq<A extends Stringable>(xs: A[]): A[] {
 //   const seen = {} as Record<string, boolean>
 //   return xs.filter(x => {
 //     const s = x.toString()
@@ -506,11 +515,11 @@
 //   })
 // }
 
-// /** Order into the result of some function.
+// /** Order into the result of some fn.
 
 //   filterthese(['foo', 'bar', 'baz', 'qux'], w => w[0], ['f', 'b']) // => [['foo'], ['bar', 'baz']]
 // */
-// export function filterthese<A, B>(xs: A[], filter: (x: A) => B, outs: B[]): A[][] {
+// pub fn filterthese<A, B>(xs: A[], filter: (x: A) => B, outs: B[]): A[][] {
 //   return outs.map(b => xs.filter(x => filter(x) === b))
 // }
 
@@ -518,7 +527,7 @@
 
 //   yesorno(['foo', 'bar', 'baz', 'qux'], x => x.indexOf('a') > -1) // => [['bar', 'baz'], ['foo', 'qux']]
 // */
-// export function yesorno<A>(xs: A[], filter: (x: A) => any): A[][] {
+// pub fn yesorno<A>(xs: A[], filter: (x: A) => any): A[][] {
 //   return filterthese(xs, x => !!filter(x), [true, false])
 // }
 
@@ -526,7 +535,7 @@
 
 //   usandthem(['foo', 'bar', 'baz', 'qux'], x => x.indexOf('a'), -1) // => [['foo', 'qux'], ['bar', 'baz']]
 // */
-// export function usandthem<A, B>(xs: A[], filter: (x: A) => B, we: B): [A[], A[]] {
+// pub fn usandthem<A, B>(xs: A[], filter: (x: A) => B, we: B): [A[], A[]] {
 //   return yesorno(xs, x => filter(x) == we) as [A[], A[]]
 // }
 
@@ -536,7 +545,7 @@
 //   ends(['one']) // => ['one', 'one']
 //   ends([]) // => [undefined, undefined]
 //  */
-// export function ends<A>(xs: A[]): [A, A] {
+// pub fn ends<A>(xs: A[]): [A, A] {
 //   return [xs[0], xs.slice(-1)[0]]
 // }
 
@@ -549,7 +558,7 @@
 //   set_modify(abc, 'd', false) // => abc
 
 // */
-// export function set_modify<A extends Stringable>(members: A[], point: A, value: boolean) {
+// pub fn set_modify<A extends Stringable>(members: A[], point: A, value: boolean) {
 //   if (value) {
 //     return uniq([...members, point])
 //   } else {
@@ -558,12 +567,12 @@
 // }
 
 // /** Removes adjacent elements that are equal, using === */
-// export function drop_adjacent_equal<A>(xs: A[]): A[] {
+// pub fn drop_adjacent_equal<A>(xs: A[]): A[] {
 //   return xs.filter((x, i) => i == 0 || x !== xs[i - 1])
 // }
 
 // /** Union-find data structure operations */
-// export interface UnionFind<A> {
+// pub interface UnionFind<A> {
 //   /** What group does this belong to? */
 //   find(x: A): A
 //   /** Make these belong to the same group. */
@@ -584,7 +593,7 @@
 //   uf.find(20) == uf.find(40) // => true
 //   uf.find(20) == uf.find(50) // => true
 // */
-// export function UnionFind(): UnionFind<number> {
+// pub fn UnionFind(): UnionFind<number> {
 //   const rev = [] as number[]
 //   const find = (x: number) => {
 //     if (rev[x] == undefined) {
@@ -625,7 +634,7 @@
 //   num('FOO') // => 0
 //   un(0) // => 'foo'
 // */
-// export function Renumber<A>(serialize = (a: A) => JSON.stringify(a)) {
+// pub fn Renumber<A>(serialize = (a: A) => JSON.stringify(a)) {
 //   const bw: Record<string, number> = {}
 //   const fw: Record<string, A> = {}
 //   let i = 0
@@ -657,7 +666,7 @@
 //   uf.union('A', 'B')
 //   uf.find('a') == uf.find('b') // => true
 // */
-// export function PolyUnionFind<A>(
+// pub fn PolyUnionFind<A>(
 //   serialize = (a: A) => JSON.stringify(a)
 // ): UnionFind<A> & {repr: (a: A) => number} {
 //   const {un, num} = Renumber(serialize)
@@ -671,11 +680,11 @@
 //   }
 // }
 
-// export function guard<A>(p: boolean | string | undefined, x: A): A[] {
+// pub fn guard<A>(p: boolean | string | undefined, x: A): A[] {
 //   return p ? [x] : []
 // }
 
-// export function Counter<A>(xs: A[], serialize = (a: A) => JSON.stringify(a)) {
+// pub fn Counter<A>(xs: A[], serialize = (a: A) => JSON.stringify(a)) {
 //   const count: Record<string, number> = {}
 //   const insert = (x: A) => {
 //     const s = serialize(x)
@@ -696,19 +705,19 @@
 //   rm.join('') // => 'de'
 
 // */
-// export function splice<A>(xs: A[], start: number, count: number, ...insert: A[]): [A[], A[]] {
+// pub fn splice<A>(xs: A[], start: number, count: number, ...insert: A[]): [A[], A[]] {
 //   const ys = xs.slice()
 //   const zs = ys.splice(start, count, ...insert)
 //   return [ys, zs]
 // }
 
-// /** True iff this function throws an exception
+// /** True iff this fn throws an exception
 
 //   throws(() => '123')        // => false
 //   throws(() => raise('123')) // => true
 
 // */
-// export function throws(m: () => any): boolean {
+// pub fn throws(m: () => any): boolean {
 //   try {
 //     return m(), false
 //   } catch (e) {
@@ -727,7 +736,7 @@
 //   u(2) // => false
 
 // */
-// export function unique_check<S>(): (s: S) => boolean {
+// pub fn unique_check<S>(): (s: S) => boolean {
 //   const c = count<S>()
 //   return s => c.inc(s) === 1
 // }
@@ -746,7 +755,7 @@
 //   u.get(3) // => 1
 
 // */
-// export function count<S>() {
+// pub fn count<S>() {
 //   const m = new Map<S, number>()
 //   return {
 //     get(s: S) {
@@ -760,11 +769,11 @@
 // }
 
 // /** Raise an exception */
-// export function raise<A>(s: string): A {
+// pub fn raise<A>(s: string): A {
 //   throw new Error(s)
 // }
 
-// export function overlaps<A>(s: Set<A>, t: Set<A>) {
+// pub fn overlaps<A>(s: Set<A>, t: Set<A>) {
 //   return [...s.keys()].some(k => t.has(k))
 // }
 
@@ -777,7 +786,7 @@
 //   rearrange([0, 1, 2, 3], 1, 2, 2) // => [0, 1, 2, 3]
 
 // */
-// export function rearrange<A>(xs: A[], begin: number, end: number, dest: number): A[] {
+// pub fn rearrange<A>(xs: A[], begin: number, end: number, dest: number): A[] {
 //   const [a, mid, z] = splitAt3(xs, begin, end + 1)
 //   const w = end - begin
 //   if (dest > begin) {
@@ -794,7 +803,7 @@
 //   range(4) // => [0, 1, 2, 3]
 
 // */
-// export function range(to: number) {
+// pub fn range(to: number) {
 //   const out = []
 //   for (let i = 0; i < to; ++i) {
 //     out.push(i)
@@ -802,7 +811,7 @@
 //   return out
 // }
 
-// export function fromTo(begin: number, end: number) {
+// pub fn fromTo(begin: number, end: number) {
 //   const out = []
 //   for (let i = begin; i < end; ++i) {
 //     out.push(i)
@@ -818,14 +827,14 @@
 //   next_id(['77j66']) // => 78
 
 // */
-// export function next_id(xs: string[]): number {
+// pub fn next_id(xs: string[]): number {
 //   let max = -1
 //   xs.forEach(x => (x.match(/\d+/g) || []).forEach(i => (max = Math.max(max, parseInt(i)))))
 //   return max + 1
 // }
 
 // /** Reductio ad Absurdum */
-// export function absurd<A>(c: never): A {
+// pub fn absurd<A>(c: never): A {
 //   return c
 // }
 
@@ -852,17 +861,17 @@
 // This only obeys store laws if the equality of the store is relaxed to array set equality
 
 // */
-// export function array_store_key(store: Store<string[]>, key: string): Store<boolean> {
+// pub fn array_store_key(store: Store<string[]>, key: string): Store<boolean> {
 //   return array_store(store)
 //     .via(Lens.key(key))
 //     .via(Lens.iso((tu: true | undefined) => tu || false, (b: boolean) => b || undefined))
 // }
 
-// export function fromPairs<A extends string, B>(xs: [A, B][]): Record<A, B> {
+// pub fn fromPairs<A extends string, B>(xs: [A, B][]): Record<A, B> {
 //   return Object.assign({}, ...xs.map(([a, b]) => ({[a as string]: b})))
 // }
 
-// export function array_store(store: Store<string[]>): Store<Record<string, true>> {
+// pub fn array_store(store: Store<string[]>): Store<Record<string, true>> {
 //   return store.via(
 //     Lens.iso(
 //       (xs: string[]) => fromPairs(xs.map(x => [x, true] as [string, true])),
@@ -890,11 +899,11 @@
 // This only obeys store laws if the equality of the store is relaxed about
 // whitespace and strings do not mix whitespace and non-whitespace
 // */
-// export function store_join(store: Store<string[]>): Store<string> {
+// pub fn store_join(store: Store<string[]>): Store<string> {
 //   return store.via(Lens.iso((ss: string[]) => ss.join(' '), s => s.split(/\s+/g)))
 // }
 
-// export interface RequestOptions {
+// pub interface RequestOptions {
 //   method: 'GET' | 'POST'
 //   contentType?: 'json' | 'text'
 //   withCredentials?: boolean
@@ -902,7 +911,7 @@
 //   data?: any
 // }
 
-// export function request(
+// pub fn request(
 //   url: string,
 //   options: RequestOptions,
 //   k: (response: any) => void,
@@ -924,7 +933,7 @@
 // }
 
 // /** POST request */
-// export function POST(
+// pub fn POST(
 //   url: string,
 //   data: any,
 //   k: (response: any) => void,
@@ -942,7 +951,7 @@
 // }
 
 // /** GET request */
-// export function GET(
+// pub fn GET(
 //   url: string,
 //   k: (response: any) => void,
 //   k_err: (response: any, code: number) => void = () => {}
@@ -955,7 +964,7 @@
 //   request(url, options, k, k_err)
 // }
 
-// export function get_cookie(name: string): string | undefined {
+// pub fn get_cookie(name: string): string | undefined {
 //   for (const cookie of document.cookie.split(/\s*;\s*/)) {
 //     if (cookie.substring(0, name.length + 1) === name + '=') {
 //       return decodeURIComponent(cookie.substring(name.length + 1))
@@ -965,11 +974,11 @@
 
 // /** Debounce from underscore.js
 
-// Returns a function, that, as long as it continues to be invoked, will not
-// be triggered. The function will be called after it stops being called for
+// Returns a fn, that, as long as it continues to be invoked, will not
+// be triggered. The fn will be called after it stops being called for
 // N milliseconds.
 // */
-// export function debounce(wait: number, k: (...args: any[]) => void): (...args: any[]) => void {
+// pub fn debounce(wait: number, k: (...args: any[]) => void): (...args: any[]) => void {
 //   let id: any | null
 //   return (...args: any[]) => {
 //     if (id != null) {
@@ -982,13 +991,13 @@
 //   }
 // }
 
-// /** Iterate a function f until a fixpoint x is reached (i.e. f(x) = x)
+// /** Iterate a fn f until a fixpoint x is reached (i.e. f(x) = x)
 
 //   fix(1234, x => Math.round(x / 2)) // => 1
 //   fix(1234, x => Math.floor(x / 2)) // => 0
 
 // */
-// export function fix<A>(init: A, f: (a: A) => A): A {
+// pub fn fix<A>(init: A, f: (a: A) => A): A {
 //   let v = init
 //   let last = v
 //   do {
@@ -998,7 +1007,7 @@
 //   return v
 // }
 
-// export function cartesian<T, Ks extends keyof T>(r: {[K in Ks]: T[K][]}): {[K in Ks]: T[K]}[] {
+// pub fn cartesian<T, Ks extends keyof T>(r: {[K in Ks]: T[K][]}): {[K in Ks]: T[K]}[] {
 //   const ks = Object.keys(r)
 //   if (ks.length == 0) {
 //     return [{} as any]
@@ -1009,7 +1018,7 @@
 //   }
 // }
 
-// export function upper_triangular<A>(xs: A[]): [A, A][] {
+// pub fn upper_triangular<A>(xs: A[]): [A, A][] {
 //   const out: [A, A][] = []
 //   xs.forEach((x, i) => xs.forEach((y, j) => j > i && out.push([x, y])))
 //   return out
@@ -1028,7 +1037,7 @@
 //   }, sum, (a: number, b: number) => a == b) // => [{x: 3,y: 3,z: 3},{x: 8,y: 8,z: 8}]
 
 // */
-// export function merge_series<K extends string, S, A>(
+// pub fn merge_series<K extends string, S, A>(
 //   r: Record<K, S[]>,
 //   concat: (xs: S[]) => A,
 //   cmp: (a: A, b: A) => boolean
@@ -1050,14 +1059,14 @@
 //   return out
 // }
 
-// export function zipWithPrevious<A, B>(
+// pub fn zipWithPrevious<A, B>(
 //   xs: A[],
 //   k: (x: A, prev: A | undefined, i: number) => B
 // ): B[] {
 //   return xs.map((x, i) => k(x, xs[i - 1], i))
 // }
 
-// export interface KV<K, V> {
+// pub interface KV<K, V> {
 //   has(k: K): boolean
 //   get(k: K): V | undefined
 //   set(k: K, v: V): void
@@ -1066,7 +1075,7 @@
 //   obj: Record<string, V>
 // }
 
-// export function KV<K, V>(s: (k: K) => string = JSON.stringify): KV<K, V> {
+// pub fn KV<K, V>(s: (k: K) => string = JSON.stringify): KV<K, V> {
 //   const obj = {} as Record<string, V>
 //   const krev = {} as Record<string, K>
 //   const api: KV<K, V> = {
@@ -1091,20 +1100,20 @@
 //   return api
 // }
 
-// export type LazySnocList<A> = (() => Snoc<A>) | null
-// export interface Snoc<A> {
+// pub type LazySnocList<A> = (() => Snoc<A>) | null
+// pub interface Snoc<A> {
 //   0: LazySnocList<A>
 //   1: A
 // }
-// export function snoc<A>(xs: LazySnocList<A>, x: A): LazySnocList<A> {
+// pub fn snoc<A>(xs: LazySnocList<A>, x: A): LazySnocList<A> {
 //   return () => [xs, x]
 // }
 
-// export function snocs<A>(xs: LazySnocList<A>, ys: A[]): LazySnocList<A> {
+// pub fn snocs<A>(xs: LazySnocList<A>, ys: A[]): LazySnocList<A> {
 //   return ys.reduce((xs, y) => snoc(xs, y), xs)
 // }
 
-// export function snocsToArray<A>(xs: LazySnocList<A>): A[] {
+// pub fn snocsToArray<A>(xs: LazySnocList<A>): A[] {
 //   const out: A[] = []
 //   while (xs !== null) {
 //     const cell = xs()
@@ -1114,11 +1123,11 @@
 //   return out.reverse()
 // }
 
-// export function expr<R>(k: () => R): R {
+// pub fn expr<R>(k: () => R): R {
 //   return k()
 // }
 
-// export function chain<A, B>(a: A, f: (a: A) => B): B {
+// pub fn chain<A, B>(a: A, f: (a: A) => B): B {
 //   return f(a)
 // }
 
@@ -1130,12 +1139,12 @@
 //   push(a, 'a', 'B')
 //   a // => {a: ['A', 'B']}
 //  */
-// export function push<K extends string, V>(obj: Record<K, V[]>, k: string, ...vs: V[]) {
+// pub fn push<K extends string, V>(obj: Record<K, V[]>, k: string, ...vs: V[]) {
 //   const _obj = (obj as any) as Record<string, V[]>
 //   ;(_obj[k] || (_obj[k] = [])).push(...vs)
 // }
 
-// export function setIfChanged<A>(store: Store<A>, value: A) {
+// pub fn setIfChanged<A>(store: Store<A>, value: A) {
 //   const now = store.get()
 //   if (!R.equals(now, value)) {
 //     store.set(value)
@@ -1157,7 +1166,7 @@
 //   edit_range('', '01') // => {from: 0, to: 0, insert: '01'}
 
 // */
-// export function edit_range(s0: string, s: string): {from: number; to: number; insert: string} {
+// pub fn edit_range(s0: string, s: string): {from: number; to: number; insert: string} {
 //   const patches = token_diff(s0, s)
 //   const pre = R.takeWhile<[number, string]>(i => i[0] == 0, patches)
 //   const post = R.takeLastWhile<[number, string]>(i => i[0] == 0, R.drop(pre.length, patches))
@@ -1168,7 +1177,7 @@
 //   return {from, to, insert}
 // }
 
-// export function within(lo: number, x: number, hi: number) {
+// pub fn within(lo: number, x: number, hi: number) {
 //   return lo <= x && x < hi
 // }
 
@@ -1181,12 +1190,12 @@
 //   findLastIndex(range(10), x => x > 100) // => 10
 
 // */
-// export function findLastIndex<A>(xs: A[], f: (v: A, i: number) => boolean): number {
+// pub fn findLastIndex<A>(xs: A[], f: (v: A, i: number) => boolean): number {
 //   const op = (rindex: number) => xs.length - rindex - 1
 //   return op(xs.findIndex((_, rindex) => f(xs[op(rindex)], op(rindex))))
 // }
 
-// export function timeit<A>(label: string, doit: () => A): A {
+// pub fn timeit<A>(label: string, doit: () => A): A {
 //   const yes = false
 //   yes && console.time(label)
 //   const a = doit()
@@ -1194,11 +1203,11 @@
 //   return a
 // }
 
-// export function getUnsafe<K, V>(m: Map<K, V>, k: K): V {
+// pub fn getUnsafe<K, V>(m: Map<K, V>, k: K): V {
 //   return m.get(k) || raise(`Key missing: ${k}`)
 // }
 
-// export function any(...bs: boolean[]): boolean {
+// pub fn any(...bs: boolean[]): boolean {
 //   for (const b of bs) {
 //     if (b) {
 //       return true
@@ -1210,7 +1219,7 @@
 // /** Scroll a parent element vertically to include a child element.
 
 // Parent must have `position: relative`. */
-// export function scrollIntoView(parent: HTMLElement, child: HTMLElement) {
+// pub fn scrollIntoView(parent: HTMLElement, child: HTMLElement) {
 //   const scrollY = (top: number) => parent.scroll({top, behavior: 'smooth'})
 //   // If child bottom is below parent bottom, align bottoms.
 //   if (child.offsetTop + child.offsetHeight > parent.scrollTop + parent.offsetHeight)

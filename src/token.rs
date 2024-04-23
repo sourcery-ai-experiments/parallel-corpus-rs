@@ -1,4 +1,6 @@
 use regex::Regex;
+
+use crate::shared;
 // import * as Utils from '../Utils'
 
 #[cfg(test)]
@@ -199,16 +201,21 @@ mod tests;
 pub fn tokenize(s: &str) -> Vec<String> {
     let re1 = Regex::new(r"\s*\S+\s*").unwrap();
     let re2 = Regex::new(r"\s+$").unwrap();
-    let tokens: Vec<String> = re1.find_iter(s).map(|m| m.as_str().to_string()).collect();
-    if !tokens.is_empty() {
-        return tokens;
-    }
-    let tokens: Vec<String> = re2.find_iter(s).map(|m| m.as_str().to_string()).collect();
+    let tokens = {
+        let tokens: Vec<String> = re1.find_iter(s).map(|m| m.as_str().to_string()).collect();
+        if !tokens.is_empty() {
+            tokens
+        } else {
+            re2.find_iter(s)
+                .map(|m| m.as_str().to_string())
+                .collect::<Vec<String>>()
+        }
+    };
     // if !tokens.is_empty() {
     //     return tokens;
     // }
     //   return (s.match(/\s*\S+\s*/g) || s.match(/^\s+$/g) || []).map(Utils.end_with_space)
-    tokens
+    tokens.into_iter().map(shared::end_with_space).collect()
 }
 
 // /** Tokenizes text on whitespace, prefers to have trailing whitespace
