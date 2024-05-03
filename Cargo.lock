@@ -143,15 +143,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
-name = "graph-rs"
-version = "0.1.0"
-dependencies = [
- "insta",
- "regex",
- "rstest",
-]
-
-[[package]]
 name = "insta"
 version = "1.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -186,6 +177,15 @@ name = "memchr"
 version = "2.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c8640c5d730cb13ebd907d8d04b52f55ac9a2eec55b440c8892f40d56c76c1d"
+
+[[package]]
+name = "parallel-corpus"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "regex",
+ "rstest",
+]
 
 [[package]]
 name = "pin-project-lite"
