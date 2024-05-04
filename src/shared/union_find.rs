@@ -4,11 +4,11 @@ use std::collections::HashMap;
 mod tests;
 // /** Union-find data structure operations */
 // pub interface UnionFind<A> {
-//   /** What group does this belong to? */
+/// What group does this belong to?
 //   find(x: A): A
-//   /** Make these belong to the same group. */
+/// Make these belong to the same group.
 //   union(x: A, y: A): A
-//   /** Make these belong to the same group. */
+/// Make these belong to the same group.
 //   unions(xs: A[]): void
 // }
 
@@ -34,15 +34,7 @@ impl UnionFind {
     pub fn new() -> Self {
         Self::default()
     }
-    //   const rev = [] as number[]
-    //   const find = (x: number) => {
-    //     if (rev[x] == undefined) {
-    //       rev[x] = x
-    //     } else if (rev[x] != x) {
-    //       rev[x] = find(rev[x])
-    //     }
-    //     return rev[x]
-    //   }
+    /// What group does this belong to?
     pub fn find(&mut self, x: usize) -> usize {
         while x >= self.rev.len() {
             self.rev.push(None);
@@ -54,14 +46,7 @@ impl UnionFind {
         }
         self.rev[x].unwrap()
     }
-    //   const union = (x: number, y: number) => {
-    //     const find_x = find(x)
-    //     const find_y = find(y)
-    //     if (find_x != find_y) {
-    //       rev[find_y] = find_x
-    //     }
-    //     return find_x
-    //   }
+    /// Make these belong to the same group.
     pub fn union(&mut self, x: usize, y: usize) -> usize {
         let find_x = self.find(x);
         let find_y = self.find(y);
@@ -70,20 +55,12 @@ impl UnionFind {
         }
         find_x
     }
-    //   const unions = (xs: number[]) => {
-    //     if (xs.length > 0) {
-    //       xs.reduce(union, xs[0])
-    //     }
-    //   }
-    //   return {find, union, unions}
-    // }
+    /// Make these belong to the same group.
     pub fn unions(&mut self, xs: &[usize]) {
-        if !xs.is_empty() {
-            let init = xs[0];
-            xs.iter().for_each(|e| {
-                self.union(init, *e);
-            });
-        }
+        xs.iter().fold(xs[0], |xs_0, x| {
+            self.union(xs_0, *x);
+            xs_0
+        });
     }
 }
 // /** Assign unique numbers to each distinct element
@@ -108,67 +85,43 @@ pub struct Renumber<A> {
     serialize: Box<dyn Fn(&A) -> String>,
 }
 
-impl<A: ToString> Default for Renumber<A> {
+impl<A> Default for Renumber<A>
+where
+    A: ToString + 'static,
+{
     fn default() -> Self {
+        Self::new(Box::new(A::to_string))
+    }
+}
+
+impl<A> Renumber<A> {
+    pub fn new(serialize: Box<dyn Fn(&A) -> String>) -> Self {
         Self {
             bw: HashMap::new(),
             fw: HashMap::new(),
             i: 0,
-            serialize: Box::new(|a| a.to_string()),
+            serialize,
         }
     }
-}
-impl<A> Renumber<A> {
-    pub fn new<F>(serialize: F) -> Self 
-    where
-        F: Fn(&A) -> String + 'static {
-        Self {
-            serialize: Box::new(serialize),
-            bw: HashMap::new(),
-            fw: HashMap::new(),
-            i: 0
-        }
-    }
-}
-impl<A> Renumber<A> {
-    // pub fn Renumber<A>(serialize = (a: A) => JSON.stringify(a)) {
-    //   const bw: Record<string, number> = {}
-    //   const fw: Record<string, A> = {}
-    //   let i = 0
-    //   return {
-    //     num(a: A) {
-    //       const s = serialize(a)
-    //       if (!(s in bw)) {
-    //         fw[i] = a
-    //         bw[s] = i++
-    //       }
-    //       return bw[s]
-    //     },
     /// What number does (the serialization of) this element have? */
     pub fn num(&mut self, a: A) -> usize {
         let s = (self.serialize)(&a);
         if !self.bw.contains_key(&s) {
+            let result = self.i;
             self.fw.insert(self.i, a);
             self.bw.insert(s, self.i);
-            let result = self.i;
             self.i += 1;
-            result
-        } else {
-            self.bw[&s]
+            return result;
         }
+        self.bw[&s]
     }
-    /// What is the serialization of any element that has this number?
+    /// What is the serialization of any element that has this number? */
     pub fn un(&self, n: usize) -> Option<&A> {
         self.fw.get(&n)
     }
-    //     un(n: number) {
-    //       return fw[n]
-    //     },
-    //   }
-    // }
 }
-// /** Make a polymorphic union-find data structure
 
+/// Make a polymorphic union-find data structure
 //   const uf = PolyUnionFind<string>(a => a.toLowerCase())
 //   uf.repr('a') // => 0
 //   uf.repr('A') // => 0
@@ -177,7 +130,7 @@ impl<A> Renumber<A> {
 //   uf.find('a') == uf.find('b') // => false
 //   uf.union('A', 'B')
 //   uf.find('a') == uf.find('b') // => true
-// */
+///
 pub struct PolyUnionFind<A> {
     renum: Renumber<A>,
     uf: UnionFind,
@@ -186,44 +139,47 @@ pub struct PolyUnionFind<A> {
 impl<A> PolyUnionFind<A> {
     pub fn new<F>(serialize: F) -> Self
     where
-    F: Fn(&A) -> String + 'static {
-        Self { renum: Renumber::new(serialize), uf: UnionFind::default() }
+        F: Fn(&A) -> String + 'static,
+    {
+        Self {
+            renum: Renumber::new(Box::new(serialize)),
+            uf: UnionFind::default(),
+        }
     }
-// pub fn PolyUnionFind<A>(
-//   serialize = (a: A) => JSON.stringify(a)
-// ): UnionFind<A> & {repr: (a: A) => number} {
-//   const {un, num} = Renumber(serialize)
-//   const uf = UnionFind()
-//   return {
     /// What number does the group of this element have?
     pub fn repr(&mut self, x: A) -> usize {
-        self.uf.find(self.renum.num(x))
-    }
-//     repr: x => uf.find(num(x)),
-//     find: x => un(uf.find(num(x))),
-    pub fn find(&mut self,x: A) -> Option<&A> {
         let num_x = self.renum.num(x);
-        self.renum.un(self.uf.find(num_x))
+        self.uf.find(num_x)
     }
-//     union: (x, y) => un(uf.union(num(x), num(y))),
-    pub fn union(&mut self,x:A, y:A) -> Option<&A> {
+    /// What group does this belong to?
+    pub fn find(&mut self, x: A) -> Option<&A> {
+        let num_x = self.renum.num(x);
+        let find_x = self.uf.find(num_x);
+        self.renum.un(find_x)
+    }
+    /// Make these belong to the same group.
+    pub fn union(&mut self, x: A, y: A) -> Option<&A> {
         let num_x = self.renum.num(x);
         let num_y = self.renum.num(y);
-        self.renum.un(self.uf.union(num_x, num_y))
+        let u_xy = self.uf.union(num_x, num_y);
+        self.renum.un(u_xy)
     }
 }
-//     unions: xs => uf.unions(xs.map(num)),
-impl<A: Clone> PolyUnionFind<A> {
-
+impl<A> PolyUnionFind<A>
+where
+    A: Clone,
+{
+    /// Make these belong to the same group.
     pub fn unions(&mut self, xs: &[A]) {
         if xs.is_empty() {
             return;
         }
         let num_0 = self.renum.num(xs[0].clone());
-        xs.iter().skip(1).map(|x| self.renum.num(x.clone())).for_each(|e| {
-            self.uf.union(num_0, e);
-        });
+        xs.iter()
+            .skip(1)
+            .map(|x| self.renum.num(x.clone()))
+            .for_each(|e| {
+                self.uf.union(num_0, e);
+            });
     }
-//   }
-// }
 }
