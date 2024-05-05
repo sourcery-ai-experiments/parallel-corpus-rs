@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt;
 
 // /** Parallel corpus as a graph */
 use super::shared;
@@ -17,17 +18,37 @@ use crate::Token;
 #[cfg(test)]
 mod tests;
 
-// pub type Side = 'source' | 'target'
+pub enum Side {
+    Source,
+    Target,
+}
 
 // pub let opposite = (s: Side): Side => (s === 'source' ? 'target' : 'source')
 
 // pub let sides = ['source', 'target'] as Side[]
 
 // pub let sidecase = <T>(side: Side, s: T, t: T): T => (side === 'source' ? s : t)
+pub struct SourceTarget<A> {
+    source: A,
+    target: A,
+}
 
-// pub fn mapSides<A, B>(g: SourceTarget<A>, f: (a: A, side: Side) => B): SourceTarget<B> {
-//   return {source: f(g.source, 'source'), target: f(g.target, 'target')}
-// }
+impl<A: fmt::Debug> fmt::Debug for SourceTarget<A> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SourceTarget")
+            .field("source", &self.source)
+            .field("target", &self.target)
+            .finish()
+    }
+}
+
+pub fn map_sides<A, B>(g: &SourceTarget<A>, f: impl Fn(&A, Side) -> B) -> SourceTarget<B> {
+    SourceTarget {
+        source: f(&g.source, Side::Source),
+        target: f(&g.target, Side::Target),
+    }
+    //   return {source: f(g.source, 'source'), target: f(g.target, 'target')}
+}
 
 // pub interface SourceTarget<A> {
 //   readonly source: A
@@ -40,8 +61,7 @@ mod tests;
 // }
 #[derive(Debug)]
 pub struct Graph {
-    source: Vec<Token>,
-    target: Vec<Token>,
+    source_target: SourceTarget<Vec<Token>>,
     edges: Edges,
     comment: Option<String>,
 }
@@ -223,8 +243,10 @@ pub fn init_from(tokens: Vec<String>, manual: bool) -> Graph {
             .collect(),
     );
     align(Graph {
-        source: token::identify(tokens.clone(), "s"),
-        target: token::identify(tokens, "t"),
+        source_target: SourceTarget {
+            source: token::identify(tokens.clone(), "s"),
+            target: token::identify(tokens, "t"),
+        },
         edges,
         comment: None,
     })
@@ -291,7 +313,7 @@ pub fn init_from(tokens: Vec<String>, manual: bool) -> Graph {
 //   return align({...g, edges})
 // }
 
-// /** Map from token ids to edges
+/// Map from token ids to edges
 
 //   let g = init('w')
 //   let e = Edge(['s0', 't0'], [])
@@ -300,7 +322,7 @@ pub fn init_from(tokens: Vec<String>, manual: bool) -> Graph {
 //   lhs // => rhs
 
 // */
-// pub fn edge_map(g: Graph): Map<string, Edge> {
+pub fn edge_map(g: Graph) -> HashMap<String, Edge> {
 //   return new Map(
 //     Utils.flatten(record.traverse(g.edges, e => e.ids.map(id => [id, e] as [string, Edge])))
 //   )
@@ -816,13 +838,14 @@ pub fn init_from(tokens: Vec<String>, manual: bool) -> Graph {
 // */
 pub fn align(g: Graph) -> Graph {
     // Use a union-find to group characters into edges.
-    // let uf = union_find::PolyUnionFind::<String>(|u| u);
+    let uf = union_find::PolyUnionFind::<String>::new(|u| u.clone());
     //   let em = Utils.chain(edge_map(g), m => (id: string): Edge =>
     //     m.get(id) || Utils.raise(`Token id ${id} not in edge map`)
     //   )
 
     //   {
-    //     // Character by character, what was deleted and inserted?
+    // Character by character, what was deleted and inserted?
+    // let chars = map_sides(&g.source_target, |tokens, _| tokens.iter().filter(|token| ));
     //     let chars = mapSides(g, tokens =>
     //       Utils.flatMap(tokens.filter(token => !em(token.id).manual), to_char_ids)
     //     )
